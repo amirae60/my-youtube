@@ -43,6 +43,20 @@ button{cursor:pointer}
 .tv .cbtn:focus{background:rgba(255,255,255,.25);outline-offset:1px}
 .tv .cbtn.big:focus{background:#fff}
 .tv .keys{display:none}
+.tvtitle{display:none}
+.tvfull #watch .stage{position:fixed;inset:0;z-index:1000;border-radius:0;background:#000}
+.tvfull #watch .player{position:absolute;inset:0;aspect-ratio:auto;border-radius:0}
+.tvfull #watch .controls{position:absolute;left:0;right:0;bottom:0;z-index:5;padding:48px 40px 24px;background:linear-gradient(transparent,rgba(0,0,0,.88));transition:opacity .3s}
+.tvfull #watch .tvtitle{display:block;position:absolute;left:0;right:0;top:0;z-index:5;padding:28px 40px 56px;color:#fff;font-size:24px;font-weight:700;background:linear-gradient(rgba(0,0,0,.8),transparent);transition:opacity .3s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tvfull #watch .stage.idle .controls,.tvfull #watch .stage.idle .tvtitle{opacity:0;pointer-events:none}
+.tvfull #watch .stage.idle{cursor:none}
+.tvfull #cFull{display:none}
+.tvfull .cbtn{width:52px;height:52px}.tvfull .cbtn svg{width:30px;height:30px}
+.tvfull .cbtn.big{width:64px;height:64px}.tvfull .cbtn.big svg{width:36px;height:36px}
+.tvfull .ctime{font-size:16px}
+.tvfull .endcard{font-size:18px}
+.tvfull .endcard .btn{margin-top:14px;font-size:18px;padding:12px 26px}
+html.tvfull.watching,html.tvfull.watching body{overflow:hidden}
 img{max-width:100%}
 
 /* Top bar */
@@ -221,6 +235,7 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
   <section id="watch" class="watch hidden">
     <div>
       <div class="stage" id="stage">
+        <div class="tvtitle" id="tvTitle"></div>
         <div class="player" id="player"><div class="shield" id="shield" aria-hidden="true"></div><div class="flash" id="flash" aria-hidden="true"></div></div>
         <div class="controls" dir="ltr">
           <input type="range" id="cSeek" class="seek" min="0" max="1" step="0.1" value="0" aria-label="Seek">
@@ -922,6 +937,7 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
   function renderWatchInfo(){
     var v = current; if (!v) return;
     $("wTitle").textContent = titleOf(v);
+    $("tvTitle").textContent = titleOf(v);
     $("wSub").textContent = ageText(v);
     var line = $("wChan"); line.innerHTML = "";
     if (v.channelTitle || v.channelId) {
@@ -960,7 +976,7 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
       host: "https://www.youtube.com", videoId: v.id, playerVars: vars,
       events: {
         onReady: function(){ ytReady = true; try { yt.getIframe().referrerPolicy = "strict-origin-when-cross-origin"; yt.getIframe().setAttribute("tabindex", "-1"); } catch(e){} yt.setVolume(+$("cVol").value); yt.playVideo(); startTick(); },
-        onStateChange: function(e){ updatePlayIcon(); if (e.data === 0) showEnd(); else hideEnd(); },
+        onStateChange: function(e){ updatePlayIcon(); if (e.data === 0) showEnd(); else hideEnd(); if (isTv) wake(); },
         onError: function(e){ showBlocked(e.data); }
       }
     });
@@ -987,6 +1003,7 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
     var pl = playlist(), i = idxIn(pl);
     if (i > -1 && i < pl.length - 1) { var n = document.createElement("button"); n.className = "btn ghost"; n.style.marginInlineStart = "8px"; n.textContent = "Next video"; n.onclick = function(){ go("watch", pl[i+1].key); }; inner.appendChild(n); }
     end.appendChild(inner); $("player").appendChild(end);
+    if (isTv) { wake(); var fb = end.querySelector("button"); if (fb) setTimeout(function(){ fb.focus({ preventScroll:true }); }, 50); }
   }
   function showBlocked(code){
     hideEnd();
@@ -999,6 +1016,7 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
     var pl = playlist(), i = idxIn(pl);
     if (i > -1 && i < pl.length - 1) { var n = document.createElement("button"); n.className = "btn"; n.textContent = "Next video"; n.onclick = function(){ go("watch", pl[i+1].key); }; inner.appendChild(n); }
     end.appendChild(inner); $("player").appendChild(end);
+    if (isTv) { wake(); var fb = end.querySelector("button"); if (fb) setTimeout(function(){ fb.focus({ preventScroll:true }); }, 50); }
   }
   function hideEnd(){ $("player").querySelectorAll(".endcard").forEach(function(n){ n.remove(); }); }
 
@@ -1291,10 +1309,22 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
 
   /* ---------- Remote control / D-pad (Android app: phone, tablet, Google TV) ---------- */
   var isApp = /MyVideosApp/.test(navigator.userAgent);
+  var isTv = isApp && (navigator.maxTouchPoints || 0) === 0;   // Android TV / Google TV: remote, no touch
   if (isApp) document.documentElement.classList.add("tv");
+  if (isTv) document.documentElement.classList.add("tvfull");
+  var idleT = null;
+  function tvWatching(){ return isTv && routeView === "watch"; }
+  function wake(){
+    var st = $("stage"), was = st.classList.contains("idle");
+    st.classList.remove("idle"); clearTimeout(idleT);
+    if (isTv) idleT = setTimeout(function(){ if (tvWatching() && isPlaying() && !$("player").querySelector(".endcard")) st.classList.add("idle"); }, 4000);
+    return was;
+  }
+  function watchDefaultFocus(){ var b = $("player").querySelector(".endcard button"); return b || $("cPlay"); }
   var focusMemo = {};
   function focusables(){
-    return Array.prototype.filter.call(document.querySelectorAll('button:not([disabled]), [tabindex="0"], input:not([disabled]), select, a[href]'), function(e){
+    var root = tvWatching() ? $("stage") : document;
+    return Array.prototype.filter.call(root.querySelectorAll('button:not([disabled]), [tabindex="0"], input:not([disabled]), select, a[href]'), function(e){
       if (e.closest(".hidden")) return false;
       var r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0;
     });
@@ -1309,7 +1339,7 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
     if (!isApp) return;
     setTimeout(function(){
       var list = focusables(), key = location.hash || "#explore", i = focusMemo[key];
-      if (routeView === "watch") { focusEl($("cPlay")); return; }
+      if (routeView === "watch") { wake(); focusEl(watchDefaultFocus()); return; }
       var first = list.filter(function(e){ return e.matches(".card,.pltile,.chanbtn"); })[0];
       focusEl(i != null && list[i] ? list[i] : (first || list[0]));
     }, 250);
@@ -1334,6 +1364,11 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
   if (isApp) {
     window.addEventListener("keydown", function(e){
       var dirs = { ArrowRight:"right", ArrowLeft:"left", ArrowDown:"down", ArrowUp:"up" }, d = dirs[e.key];
+      if (tvWatching()) {
+        var wasIdle = wake();
+        if (wasIdle && (d || e.key === "Enter" || e.key === " ")) { e.preventDefault(); e.stopPropagation(); focusEl(watchDefaultFocus()); return; }
+        if (d && $("stage").contains(document.activeElement) === false) { e.preventDefault(); e.stopPropagation(); focusEl(watchDefaultFocus()); return; }
+      }
       if (!d) return;
       var t = e.target;
       if (t && t.type === "range" && (d === "left" || d === "right")) return;           // sliders keep left/right
@@ -1355,6 +1390,8 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
     else if (h.indexOf("channel/") === 0) { view = "channel"; arg = h.slice(8); }
     else if (h === "settings" && canEdit) view = "settings";
     ["explore","watch","channel","settings"].forEach(function(s){ $(s).classList.toggle("hidden", s !== view); });
+    document.documentElement.classList.toggle("watching", view === "watch");
+    if (view !== "watch") { $("stage").classList.remove("idle"); clearTimeout(idleT); }
     if (view !== "watch") { current = null; destroyPlayer(); $("stage").classList.remove("fakefs"); document.body.classList.remove("nofscroll"); }
     routeView = view; routeArg = arg;
     if (view === "explore") renderExplore();

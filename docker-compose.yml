@@ -1,0 +1,15 @@
+services:
+  my-videos:
+    build: .
+    image: my-videos:latest
+    container_name: my-videos
+    restart: unless-stopped
+    ports:
+      # Left side = port you open in the browser (http://SERVER-IP:8081).
+      - "8081:8000"
+    volumes:
+      # data.json (your videos, channels and playlists) is saved in this folder,
+      # right next to docker-compose.yml.
+      - ./:/data
+    environment:
+      - TZ=Asia/Muscat

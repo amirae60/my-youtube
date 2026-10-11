@@ -19,10 +19,12 @@ import tempfile
 import urllib.parse
 import urllib.request
 
-PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
+PORT = int(sys.argv[1]) if len(sys.argv) > 1 else int(os.environ.get("PORT", "8000"))
 HERE = os.path.dirname(os.path.abspath(__file__))
 APP_FILE = "index.html"
-DATA_FILE = os.path.join(HERE, "data.json")
+DATA_DIR = os.environ.get("DATA_DIR", HERE)
+os.makedirs(DATA_DIR, exist_ok=True)
+DATA_FILE = os.path.join(DATA_DIR, "data.json")
 ALLOWED_HOSTS = {"www.youtube.com", "youtube.com", "m.youtube.com"}
 YT_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -132,10 +134,17 @@ def load_data():
 
 
 def save_data(obj):
-    fd, tmp = tempfile.mkstemp(dir=HERE, suffix=".tmp")
-    with os.fdopen(fd, "w", encoding="utf-8") as f:
-        json.dump(obj, f, ensure_ascii=False, indent=1)
-    os.replace(tmp, DATA_FILE)
+    text = json.dumps(obj, ensure_ascii=False, indent=1)
+    try:
+        # Safe way: write a temp file, then swap it in.
+        fd, tmp = tempfile.mkstemp(dir=DATA_DIR, suffix=".tmp")
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(text)
+        os.replace(tmp, DATA_FILE)
+    except (PermissionError, OSError):
+        # The folder isn't writable (or data.json is a mounted file): write the file directly.
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            f.write(text)
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -190,7 +199,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 raise ValueError
         except Exception:
             return self.reply(400, b"Bad JSON")
-        save_data(obj)
+        try:
+            save_data(obj)
+        except Exception as e:
+            sys.stderr.write("could not save %s: %s\n" % (DATA_FILE, e))
+            return self.json(500, {"error": "Could not save data.json: %s" % e})
+        print("saved %s  (%d videos, %d channels/playlists)" % (
+            DATA_FILE, len(obj.get("videos") or []), len(obj.get("channels") or [])))
         return self.json(200, {"ok": True})
 
     def proxy(self, parsed):
@@ -250,8 +265,13 @@ if __name__ == "__main__":
     if not os.path.exists(APP_FILE):
         print("index.html was not found next to server.py")
     with Server(("0.0.0.0", PORT), Handler) as httpd:
+        print("Data file: %s" % DATA_FILE)
         print("On this computer:  http://localhost:%d" % PORT)
-        for ip in lan_ips():
-            print("On the phone (same Wi-Fi):  http://%s:%d" % (ip, PORT))
+        if os.environ.get("IN_DOCKER"):
+            print("Running in Docker: on the phone use http://<this computer's LAN IP>:%d" % PORT)
+        else:
+            for ip in lan_ips():
+                print("On the phone (same Wi-Fi):  http://%s:%d" % (ip, PORT))
         print("Keep this window open. Ctrl+C to stop.")
+        sys.stdout.flush()
         httpd.serve_forever()
