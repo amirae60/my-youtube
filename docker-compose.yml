@@ -8,8 +8,10 @@ services:
       # Left side = port you open in the browser (http://SERVER-IP:8081).
       - "8081:8000"
     volumes:
-      # data.json (your videos, channels and playlists) is saved in this folder,
-      # right next to docker-compose.yml.
+      # The database (myvideos.db) is saved in this folder, next to docker-compose.yml.
       - ./:/data
     environment:
       - TZ=Asia/Muscat
+      # Used once, for the first-time setup of the admin (and after --reset-admin).
+      # Set it in the .env file next to this file.
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}
