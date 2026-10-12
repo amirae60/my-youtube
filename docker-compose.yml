@@ -13,3 +13,6 @@ services:
       - ./:/data
     environment:
       - TZ=Asia/Muscat
+      # Password for Settings (add / edit / delete). Set it in the .env file
+      # next to this file. Empty = no password.
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}

@@ -8,7 +8,10 @@ On the computer open:  http://localhost:8000   (add videos and channels here)
 Settings work in any browser; the Android app is view-only and finds this computer automatically on the same Wi-Fi.
 Data is saved in data.json next to this file.
 """
+import hashlib
+import hmac
 import http.server
+import time
 import json
 import re
 import os
@@ -25,6 +28,9 @@ APP_FILE = "index.html"
 DATA_DIR = os.environ.get("DATA_DIR", HERE)
 os.makedirs(DATA_DIR, exist_ok=True)
 DATA_FILE = os.path.join(DATA_DIR, "data.json")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
+# A token derived from the password: stays valid across restarts, changes when the password changes.
+ADMIN_TOKEN = hmac.new(ADMIN_PASSWORD.encode("utf-8"), b"my-videos-admin", hashlib.sha256).hexdigest() if ADMIN_PASSWORD else ""
 ALLOWED_HOSTS = {"www.youtube.com", "youtube.com", "m.youtube.com"}
 YT_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -152,6 +158,20 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         # The Android app adds "MyVideosApp" to its user agent: view-only there.
         return "MyVideosApp" in (self.headers.get("User-Agent") or "")
 
+    def is_admin(self):
+        if not ADMIN_PASSWORD:
+            return True
+        return hmac.compare_digest(self.headers.get("X-Admin-Token") or "", ADMIN_TOKEN)
+
+    def read_json(self):
+        length = int(self.headers.get("Content-Length") or 0)
+        if length <= 0 or length > 10 * 1024 * 1024:
+            raise ValueError("bad size")
+        obj = json.loads(self.rfile.read(length).decode("utf-8"))
+        if not isinstance(obj, dict):
+            raise ValueError("bad json")
+        return obj
+
     def end_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Cache-Control", "no-store")
@@ -160,7 +180,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(204)
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Admin-Token")
         self.end_headers()
 
     def do_GET(self):
@@ -171,7 +191,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if parsed.path == "/ping":
             return self.json(200, {"app": "my-videos"})
         if parsed.path == "/api/state":
-            return self.json(200, {"canEdit": not self.is_app(), "data": load_data()})
+            data = load_data()
+            admin = self.is_admin() and not self.is_app()
+            if not admin:
+                data = dict(data)
+                data.pop("apiKey", None)   # the YouTube API key is only sent after login
+            return self.json(200, {"canEdit": not self.is_app(), "needPassword": bool(ADMIN_PASSWORD),
+                                   "authorized": admin, "data": data})
         if parsed.path == "/proxy":
             return self.proxy(parsed)
         if parsed.path == "/api/list":
@@ -186,17 +212,27 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def do_POST(self):
-        if urllib.parse.urlparse(self.path).path != "/api/state":
+        path = urllib.parse.urlparse(self.path).path
+        if path == "/api/login":
+            try:
+                pw = str(self.read_json().get("password", ""))
+            except Exception:
+                return self.json(400, {"error": "Bad request"})
+            if not ADMIN_PASSWORD:
+                return self.json(200, {"token": ""})
+            if hmac.compare_digest(pw.encode("utf-8"), ADMIN_PASSWORD.encode("utf-8")):
+                return self.json(200, {"token": ADMIN_TOKEN})
+            time.sleep(1.5)  # slow down password guessing
+            sys.stderr.write("wrong settings password from %s\n" % self.client_address[0])
+            return self.json(401, {"error": "Wrong password"})
+        if path != "/api/state":
             return self.reply(404, b"Not found")
         if self.is_app():
             return self.reply(403, b"Changes are not allowed from the Android app")
-        length = int(self.headers.get("Content-Length") or 0)
-        if length <= 0 or length > 10 * 1024 * 1024:
-            return self.reply(400, b"Bad size")
+        if not self.is_admin():
+            return self.json(401, {"error": "Password required"})
         try:
-            obj = json.loads(self.rfile.read(length).decode("utf-8"))
-            if not isinstance(obj, dict):
-                raise ValueError
+            obj = self.read_json()
         except Exception:
             return self.reply(400, b"Bad JSON")
         try:
@@ -266,6 +302,7 @@ if __name__ == "__main__":
         print("index.html was not found next to server.py")
     with Server(("0.0.0.0", PORT), Handler) as httpd:
         print("Data file: %s" % DATA_FILE)
+        print("Settings password: %s" % ("ON (ADMIN_PASSWORD)" if ADMIN_PASSWORD else "OFF - set ADMIN_PASSWORD to protect Settings"))
         print("On this computer:  http://localhost:%d" % PORT)
         if os.environ.get("IN_DOCKER"):
             print("Running in Docker: on the phone use http://<this computer's LAN IP>:%d" % PORT)

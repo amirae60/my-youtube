@@ -205,6 +205,12 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
 .thumb:has(.plstack) .ph{padding-right:calc(38% + 10px);font-size:17px}
 .item .plsmall{width:120px;flex:none}
 @media (max-width:560px){.plhead{width:140px}.pltile{width:200px}.item .plsmall{width:90px}}
+.sethead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pwback{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px}
+.pwbox{background:var(--bg);color:var(--text);border-radius:16px;padding:22px;width:100%;max-width:380px;display:grid;gap:10px;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.pwbox h2{margin:0;font-size:20px}
+.pwbox p{margin:0;color:var(--muted);font-size:14px}
+.pwbox input{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:10px;padding:10px 12px;width:100%;font-size:16px}
 .loadbar{text-align:center;color:var(--muted);padding:0 16px 30px}
 @media (max-width:560px){.chead .avatar{width:72px;height:72px;font-size:28px}.chead h1{font-size:22px}}
 </style>
@@ -262,7 +268,7 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
   </section>
 
   <section id="settings" class="settings hidden">
-    <h1>Settings</h1>
+    <div class="sethead"><h1>Settings</h1><button class="btn ghost hidden" id="lockBtn" type="button">Lock settings</button></div>
 
     <div class="form">
       <h2 id="fHead">Add a video</h2>
@@ -332,6 +338,15 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
   </section>
 </main>
 
+<div class="pwback hidden" id="pwBack" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
+  <form class="pwbox" id="pwForm" autocomplete="off">
+    <h2 id="pwTitle">Settings password</h2>
+    <p>Enter the password to add, edit or delete videos.</p>
+    <input id="pwInput" type="password" autocomplete="current-password" aria-label="Password">
+    <p class="msg err" id="pwMsg" role="status"></p>
+    <div class="actions"><button class="btn" id="pwOk" type="submit">Unlock</button><button class="btn ghost" id="pwCancel" type="button">Cancel</button></div>
+  </form>
+</div>
 <script>
 (function(){
   "use strict";
@@ -348,13 +363,32 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
     }
   } catch(e){}
   /* Server mode: when served by server.py, data lives on the computer (data.json) */
-  var serverMode = false, canEdit = true, pushTimer = null;
+  var serverMode = false, canEdit = true, pushTimer = null, needPw = false, TOKEN_KEY = "my-videos-admin";
+  var adminToken = ""; try { adminToken = sessionStorage.getItem(TOKEN_KEY) || ""; } catch(e){}
+  function setToken(t){ adminToken = t || ""; try { if (t) sessionStorage.setItem(TOKEN_KEY, t); else sessionStorage.removeItem(TOKEN_KEY); } catch(e){} }
+  function unlocked(){ return !needPw || !!adminToken; }
+  function canSave(){ return serverMode && canEdit && unlocked(); }
+  function authHeaders(h){ h = h || {}; if (adminToken) h["X-Admin-Token"] = adminToken; return h; }
   function persist(){
     try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){}
-    if (serverMode && canEdit) { clearTimeout(pushTimer); pushTimer = setTimeout(pushState, 300); }
+    if (canSave()) { clearTimeout(pushTimer); pushTimer = setTimeout(pushState, 300); }
   }
   function pushState(){
-    fetch("/api/state", { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(state) }).catch(function(){});
+    fetch("/api/state", { method:"POST", headers:authHeaders({ "Content-Type":"application/json" }), body:JSON.stringify(state) })
+      .then(function(r){
+        if (r.status === 401) { setToken(""); throw new Error("the settings password is required again"); }
+        if (!r.ok) return r.json().catch(function(){ return {}; }).then(function(j){ throw new Error(j.error || ("HTTP " + r.status)); });
+        hideSaveError(); })
+      .catch(function(e){ showSaveError("Not saved to the server: " + (e && e.message || "connection failed") + ". Your changes are kept in this browser only."); });
+  }
+  function showSaveError(t){
+    var b = document.getElementById("saveErr");
+    if (!b) { b = document.createElement("div"); b.id = "saveErr"; b.setAttribute("role", "alert");
+      b.style.cssText = "position:fixed;left:16px;right:16px;bottom:16px;z-index:2000;background:#b3261e;color:#fff;padding:12px 16px;border-radius:12px;font-size:14px;box-shadow:0 4px 16px rgba(0,0,0,.3)";
+      document.body.appendChild(b); }
+    b.textContent = t;
+  }
+  function hideSaveError(){ var b = document.getElementById("saveErr"); if (b) b.remove();
   }
   function applyState(d){
     state.apiKey = d.apiKey || "";
@@ -366,12 +400,13 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
   function loadServerState(){
     if (!/^https?:$/.test(location.protocol)) return Promise.resolve(false);
     var ctrl = new AbortController(), t = setTimeout(function(){ ctrl.abort(); }, 4000);
-    return fetch("/api/state", { signal:ctrl.signal, cache:"no-store" }).then(function(r){ clearTimeout(t); if (!r.ok) throw 0; return r.json(); })
+    return fetch("/api/state", { signal:ctrl.signal, cache:"no-store", headers:authHeaders() }).then(function(r){ clearTimeout(t); if (!r.ok) throw 0; return r.json(); })
       .then(function(j){
-        serverMode = true; canEdit = !!j.canEdit;
+        serverMode = true; canEdit = !!j.canEdit; needPw = !!j.needPassword;
+        if (needPw && !j.authorized) setToken("");
         var d = j.data || {};
         var empty = !(d.videos && d.videos.length) && !(d.channels && d.channels.length);
-        if (empty && canEdit && (state.videos.length || state.channels.length)) pushState(); // first run: move this browser's list to the computer
+        if (empty && canSave() && (state.videos.length || state.channels.length)) pushState(); // first run: move this browser's list to the computer
         else applyState(d);
         return true;
       }).catch(function(){ clearTimeout(t); return false; });
@@ -889,7 +924,7 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
     var list = c.items.filter(matchesQuery);
     $("chMeta").textContent = (isPl(ch) ? "Playlist" + (ch.owner ? " by " + ch.owner : "") + " · " : "") + fa(c.items.length) + " videos · " + ageText({ min:ch.min, max:ch.max });
     if (isPl(ch)) {
-      if (!ch.thumb && c.items[0] && canEdit) { ch.thumb = "https://i.ytimg.com/vi/" + c.items[0].id + "/hqdefault.jpg"; persist(); }
+      if (!ch.thumb && c.items[0] && canSave()) { ch.thumb = "https://i.ytimg.com/vi/" + c.items[0].id + "/hqdefault.jpg"; persist(); }
       var av = $("chAvatar"); av.innerHTML = ""; av.appendChild(plThumbEl(ch, c.done ? c.items.length : null, "plhead"));
     }
     var grid = $("chGrid"), fi = Array.prototype.indexOf.call(grid.children, document.activeElement);
@@ -1388,21 +1423,51 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
     try { h = decodeURIComponent(h); } catch(e){}
     if (h.indexOf("watch/") === 0) { view = "watch"; arg = h.slice(6); }
     else if (h.indexOf("channel/") === 0) { view = "channel"; arg = h.slice(8); }
-    else if (h === "settings" && canEdit) view = "settings";
+    else if (h === "settings" && canEdit) {
+      if (unlocked()) view = "settings";
+      else { history.replaceState(null, "", location.pathname + location.search); askPassword(); }
+    }
     ["explore","watch","channel","settings"].forEach(function(s){ $(s).classList.toggle("hidden", s !== view); });
     document.documentElement.classList.toggle("watching", view === "watch");
     if (view !== "watch") { $("stage").classList.remove("idle"); clearTimeout(idleT); }
     if (view !== "watch") { current = null; destroyPlayer(); $("stage").classList.remove("fakefs"); document.body.classList.remove("nofscroll"); }
     routeView = view; routeArg = arg;
     if (view === "explore") renderExplore();
-    else if (view === "settings") renderSettings();
+    else if (view === "settings") { renderSettings(); $("lockBtn").classList.toggle("hidden", !needPw); }
     else if (view === "channel") { renderChannel(arg); window.scrollTo(0, 0); }
     else renderWatch(arg);
     autoFocus();
   }
   window.addEventListener("hashchange", route);
   $("home").onclick = function(){ go("explore"); };
-  $("gear").onclick = function(){ go("settings"); };
+  $("gear").onclick = function(){ if (unlocked()) go("settings"); else askPassword(); };
+  $("lockBtn").onclick = function(){ setToken(""); go("explore"); };
+  var pwBusy = false;
+  function askPassword(){
+    $("pwMsg").textContent = ""; $("pwInput").value = "";
+    $("pwBack").classList.remove("hidden");
+    setTimeout(function(){ $("pwInput").focus(); }, 30);
+  }
+  function closePassword(){ $("pwBack").classList.add("hidden"); }
+  $("pwCancel").onclick = closePassword;
+  $("pwBack").addEventListener("keydown", function(e){ if (e.key === "Escape") closePassword(); });
+  $("pwForm").onsubmit = function(e){
+    e.preventDefault();
+    if (pwBusy) return;
+    var pw = $("pwInput").value;
+    if (!pw) { $("pwMsg").textContent = "Enter the password."; return; }
+    pwBusy = true; $("pwOk").disabled = true; $("pwMsg").textContent = "";
+    fetch("/api/login", { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ password:pw }) })
+      .then(function(r){ return r.json().then(function(j){ if (!r.ok) throw new Error(j.error || "Wrong password"); return j; }); })
+      .then(function(j){
+        setToken(j.token);
+        return fetch("/api/state", { cache:"no-store", headers:authHeaders() }).then(function(r){ return r.json(); })
+          .then(function(st){ applyState(st.data || {}); persistLocalOnly(); closePassword(); hideSaveError(); go("settings"); backfill(); });
+      })
+      .catch(function(err){ $("pwMsg").textContent = err.message === "Failed to fetch" ? "Can't reach the server." : err.message; $("pwInput").select(); })
+      .then(function(){ pwBusy = false; $("pwOk").disabled = false; });
+  };
+  function persistLocalOnly(){ try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){} }
   $("q").addEventListener("input", function(e){
     query = e.target.value.trim().toLowerCase();
     if (routeView === "explore" || routeView === "channel") rerender(); else go("explore");
