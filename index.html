@@ -205,6 +205,48 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
 .thumb:has(.plstack) .ph{padding-right:calc(38% + 10px);font-size:17px}
 .item .plsmall{width:120px;flex:none}
 @media (max-width:560px){.plhead{width:140px}.pltile{width:200px}.item .plsmall{width:90px}}
+.signedout header.top,.signedout main{display:none!important}
+.login{min-height:100vh;display:grid;place-items:center;padding:24px 16px;background:var(--bg)}
+.loginbox{width:100%;max-width:400px;display:grid;gap:12px}
+.loginbox form,.loginbox>div:not(.loginlogo){display:grid;gap:12px}
+.loginbox .hidden{display:none!important}
+.loginlogo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:22px;margin-bottom:8px}
+.loginlogo .mark{width:34px;height:24px;border-radius:7px;background:var(--accent);display:grid;place-items:center}
+.loginlogo .mark::after{content:"";border-style:solid;border-width:6px 0 6px 9px;border-color:transparent transparent transparent #fff;margin-left:2px}
+.loginbox h1{margin:0;font-size:26px}
+.loginbox p{margin:0;color:var(--muted)}
+.loginbox label{display:grid;gap:4px;font-size:14px;color:var(--muted)}
+.loginbox input{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:12px;padding:12px 14px;font-size:18px;width:100%}
+.loginbox .btn{padding:12px 18px;font-size:16px}
+.tv .loginbox input{font-size:24px;padding:14px 16px}
+.usermenu{position:relative}
+.userbtn{display:flex;align-items:center;gap:8px;border:0;background:transparent;border-radius:40px;padding:4px 10px 4px 4px;color:var(--text)}
+.userbtn:hover{background:var(--surface)}
+.uav{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:15px}
+.uname{font-size:14px;font-weight:500;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.umenu{position:absolute;right:0;top:calc(100% + 6px);z-index:50;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;min-width:240px;box-shadow:0 8px 28px rgba(0,0,0,.25);display:grid;gap:4px}
+.umname{margin:0;font-weight:700}
+.umlink{text-decoration:none;text-align:center;display:block}
+.umlink.hidden{display:none}
+.umsub{margin:0 0 8px;color:var(--muted);font-size:13px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:0 0 18px}
+.tab{border:0;background:none;padding:10px 16px;font-weight:500;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--text);border-bottom-color:var(--text)}
+.acting{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--surface);border-left:4px solid var(--accent);border-radius:10px;padding:10px 14px;margin:0 0 18px}
+.form select{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:10px;padding:9px 12px;width:100%}
+.check{display:flex!important;align-items:center;gap:8px;color:var(--text)!important;font-size:14px}
+.check input{width:auto}
+.check.hidden{display:none!important}
+.badge2{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:20px;background:var(--surface2);color:var(--text);margin-inline-start:6px;vertical-align:1px}
+.badge2.admin{background:var(--accent);color:#fff}
+.badge2.off{background:transparent;border:1px solid var(--line);color:var(--muted)}
+@media (max-width:560px){.uname{display:none}}
+.sethead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pwback{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px}
+.pwbox{background:var(--bg);color:var(--text);border-radius:16px;padding:22px;width:100%;max-width:380px;display:grid;gap:10px;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.pwbox h2{margin:0;font-size:20px}
+.pwbox p{margin:0;color:var(--muted);font-size:14px}
+.pwbox input{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:10px;padding:10px 12px;width:100%;font-size:16px}
 .loadbar{text-align:center;color:var(--muted);padding:0 16px 30px}
 @media (max-width:560px){.chead .avatar{width:72px;height:72px;font-size:28px}.chead h1{font-size:22px}}
 </style>
@@ -214,7 +256,48 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
   <button class="logo" id="home" aria-label="Home"><span class="mark"></span>My Videos</button>
   <label class="search"><input id="q" type="search" placeholder="Search my videos" aria-label="Search"><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.8l-.3-.3A6.5 6.5 0 1 0 9.5 16a6.5 6.5 0 0 0 4.2-1.6l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg></span></label>
   <button class="iconbtn" id="gear" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7 7 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7 7 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7 7 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7 7 0 0 0 1.7-1l2.5 1 2-3.5L19.4 13zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg></button>
+  <div class="usermenu hidden" id="userWrap">
+    <button class="userbtn" id="userBtn" type="button" aria-haspopup="true" aria-expanded="false"><span class="uav" id="userAv"></span><span class="uname" id="userName"></span></button>
+    <div class="umenu hidden" id="userMenu" role="menu">
+      <p class="umname" id="umName"></p>
+      <p class="umsub" id="umSub"></p>
+      <a class="btn ghost umlink hidden" id="apkLink" href="/apk" download="my-videos.apk" role="menuitem">Download app (APK)</a>
+      <button class="btn ghost" id="signOut" type="button" role="menuitem">Sign out</button>
+    </div>
+  </div>
 </header>
+
+<section id="login" class="login hidden" aria-labelledby="loginTitle">
+  <div class="loginbox">
+    <div class="loginlogo"><span class="mark"></span>My Videos</div>
+    <form id="loginForm" class="hidden" autocomplete="off" novalidate>
+      <h1 id="loginTitle">Who's watching?</h1>
+      <p>Enter your mobile number to see your videos.</p>
+      <input id="loginPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Mobile number" aria-label="Mobile number">
+      <p class="msg err" id="loginMsg" role="status"></p>
+      <button class="btn" id="loginBtn" type="submit">Continue</button>
+    </form>
+    <form id="setupForm" class="hidden" autocomplete="off" novalidate>
+      <h1>First-time setup</h1>
+      <p>Create the admin account. You need <b>ADMIN_PASSWORD</b> from the server's <b>.env</b> file.</p>
+      <label>Setup password (ADMIN_PASSWORD)<input id="suPass" type="password" autocomplete="off"></label>
+      <label>Your name<input id="suName" type="text" maxlength="60" autocomplete="name"></label>
+      <label>Your mobile number<input id="suPhone" type="tel" inputmode="tel" autocomplete="tel"></label>
+      <p class="msg err" id="suMsg" role="status"></p>
+      <button class="btn" id="suBtn" type="submit">Create admin</button>
+    </form>
+    <div id="setupWait" class="hidden">
+      <h1>Not set up yet</h1>
+      <p>Open this site in a web browser on a computer to finish the first-time setup.</p>
+      <button class="btn" id="setupRetry" type="button">Try again</button>
+    </div>
+    <div id="srvDown" class="hidden">
+      <h1>Can't reach the server</h1>
+      <p>Check your connection and that the server is running.</p>
+      <button class="btn" id="srvRetry" type="button">Try again</button>
+    </div>
+  </div>
+</section>
 
 <main>
   <section id="explore">
@@ -262,7 +345,14 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
   </section>
 
   <section id="settings" class="settings hidden">
-    <h1>Settings</h1>
+    <div class="sethead"><h1>Settings</h1><button class="btn ghost hidden" id="lockBtn" type="button">Lock settings</button></div>
+    <div class="tabs hidden" id="setTabs" role="tablist">
+      <button class="tab" id="tabBtnVideos" role="tab" type="button" aria-selected="true">My videos</button>
+      <button class="tab" id="tabBtnUsers" role="tab" type="button" aria-selected="false">Users</button>
+    </div>
+    <div class="acting hidden" id="actingBar" role="status"><span>Editing the videos of <b id="actingName"></b></span><button class="btn ghost" id="actingBack" type="button">Back to my videos</button></div>
+
+    <div id="tabVideos">
 
     <div class="form">
       <h2 id="fHead">Add a video</h2>
@@ -313,80 +403,124 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
     <div class="list" id="chList"><h2 id="chHead"></h2><div id="chItems"></div></div>
     <div class="list" id="plList"><h2 id="plHead"></h2><div id="plItems"></div></div>
     <div class="list" style="margin-bottom:26px"><h2 id="listHead"></h2><div id="items"></div></div>
+    </div>
 
-    <details class="form apibox" id="apiBox">
-      <summary><h2>YouTube API key (optional)</h2></summary>
-      <p class="help">Everything works without a key: videos, channels, previews and logos. With a key, all of a channel's videos load (not just the latest ~200), and lookups are a little faster and more reliable.</p>
-      <div class="help">How to get a key (free):
-        <ol>
-          <li>Go to <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a> and create a project.</li>
-          <li>In APIs &amp; Services › Library, enable YouTube Data API v3.</li>
-          <li>In Credentials › Create credentials, create an API key and paste it here.</li>
-          <li>Recommended: restrict the key to your own site address (Website restrictions).</li>
-        </ol>
+    <div id="tabUsers" class="hidden">
+      <div class="form hidden" id="importBox">
+        <h2>Import old videos</h2>
+        <p class="help" id="importInfo"></p>
+        <label>Import into<select id="importUser"></select></label>
+        <div class="actions"><button class="btn" id="importBtn" type="button">Import</button></div>
+        <p class="msg" id="importMsg" role="status"></p>
       </div>
-      <label>API key<input id="kKey" type="text" dir="ltr" autocomplete="off" spellcheck="false" placeholder="AIza..."></label>
-      <div class="actions"><button class="btn" id="kSave">Save key</button></div>
-      <p class="msg" id="kMsg" role="status"></p>
-    </details>
+
+      <div class="form" id="uForm">
+        <h2 id="uHead">Add a user</h2>
+        <div class="row">
+          <label>Name<input id="uName" type="text" maxlength="60" autocomplete="off"></label>
+          <label>Mobile number<input id="uPhone" type="tel" inputmode="tel" autocomplete="off"></label>
+        </div>
+        <div class="row">
+          <label>Role<select id="uRole"><option value="user">User: adds own videos</option><option value="admin">Admin: full access</option></select></label>
+          <label id="uSecretWrap"><span id="uSecretText">PIN (4 digits)</span><input id="uSecret" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password"></label>
+        </div>
+        <p class="help" id="uHelp"></p>
+        <label class="check hidden" id="uNoPinWrap"><input type="checkbox" id="uNoPin"> Remove the PIN (watch only)</label>
+        <label class="check" id="uActiveWrap"><input type="checkbox" id="uActive" checked> Active (can sign in)</label>
+        <div class="actions">
+          <button class="btn" id="uSave" type="button">Add user</button>
+          <button class="btn ghost hidden" id="uCancel" type="button">Cancel edit</button>
+        </div>
+        <p class="msg" id="uMsg" role="status"></p>
+      </div>
+
+      <div class="list"><h2 id="uListHead">Users</h2><div id="uItems"></div></div>
+
+      <div class="form" style="margin-top:26px">
+        <h2>Change my password</h2>
+        <div class="row">
+          <label>New password<input id="myPw1" type="password" autocomplete="new-password"></label>
+          <label>Repeat it<input id="myPw2" type="password" autocomplete="new-password"></label>
+        </div>
+        <div class="actions"><button class="btn" id="myPwSave" type="button">Change password</button></div>
+        <p class="msg" id="myPwMsg" role="status"></p>
+      </div>
+    </div>
+
   </section>
 </main>
 
+<div class="pwback hidden" id="pwBack" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
+  <form class="pwbox" id="pwForm" autocomplete="off">
+    <h2 id="pwTitle">Unlock settings</h2>
+    <p id="pwText">Enter your PIN to add, edit or delete videos.</p>
+    <input id="pwInput" type="password" autocomplete="current-password" aria-label="PIN or password">
+    <input id="pwInput2" class="hidden" type="password" autocomplete="new-password" aria-label="Repeat the new password" placeholder="Repeat the new password">
+    <p class="msg err" id="pwMsg" role="status"></p>
+    <div class="actions"><button class="btn" id="pwOk" type="submit">Unlock</button><button class="btn ghost" id="pwCancel" type="button">Cancel</button></div>
+  </form>
+</div>
 <script>
 (function(){
   "use strict";
   var LS_KEY = "my-yt-library";
   var state = { apiKey:"", videos:[], channels:[], logos:{}, authorMap:{} };
-  try {
-    var saved = JSON.parse(localStorage.getItem(LS_KEY) || "null");
-    if (saved) {
-      state.apiKey = saved.apiKey || "";
-      state.videos = Array.isArray(saved.videos) ? saved.videos : [];
-      state.channels = Array.isArray(saved.channels) ? saved.channels : [];
-      state.logos = saved.logos && typeof saved.logos === "object" ? saved.logos : {};
-      state.authorMap = saved.authorMap && typeof saved.authorMap === "object" ? saved.authorMap : {};
-    }
-  } catch(e){}
-  /* Server mode: when served by server.py, data lives on the computer (data.json) */
-  var serverMode = false, canEdit = true, pushTimer = null;
+  /* Server mode: everything lives in the server's database, per signed-in user. */
+  var serverMode = false, me = null, pushTimer = null, targetUser = null, targetName = "";
+  function srv(path, body){
+    var opts = body === undefined ? { cache:"no-store", credentials:"same-origin" }
+      : { method:"POST", credentials:"same-origin", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(body) };
+    return fetch(path, opts).then(function(r){
+      return r.json().catch(function(){ return {}; }).then(function(j){
+        if (!r.ok) { var e = new Error(j.error || ("HTTP " + r.status)); e.status = r.status; throw e; }
+        return j;
+      });
+    }, function(){ var e = new Error("Can't reach the server."); e.status = 0; throw e; });
+  }
+  function isAdmin(){ return !!(me && me.user && me.user.role === "admin"); }
+  function gearAllowed(){ return !serverMode || !!(me && me.loggedIn && me.canEdit && me.user && (me.user.role === "admin" || me.user.hasSecret)); }
+  function canEditNow(){ return !serverMode || !!(me && me.loggedIn && me.canEdit && me.unlocked && !me.mustChange); }
+  function canSave(){ return serverMode && canEditNow(); }
+  function stateUrl(){ return "/api/state" + (targetUser ? "?user=" + encodeURIComponent(targetUser) : ""); }
   function persist(){
-    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){}
-    if (serverMode && canEdit) { clearTimeout(pushTimer); pushTimer = setTimeout(pushState, 300); }
+    if (!serverMode) { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){} return; }
+    if (canSave()) { clearTimeout(pushTimer); pushTimer = setTimeout(pushState, 300); }
   }
   function pushState(){
-    fetch("/api/state", { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(state) }).catch(function(){});
+    pushTimer = null;
+    var body = { videos:state.videos, channels:state.channels, logos:state.logos, authorMap:state.authorMap };
+    return srv(stateUrl(), body).then(hideSaveError, function(e){
+      if (e.status === 401) { if (me) me.unlocked = false; showSaveError("Not saved: Settings were locked. Open Settings, unlock, and make the change again."); }
+      else showSaveError("Not saved to the server: " + e.message);
+    });
   }
+  function flushPush(){ if (pushTimer) { clearTimeout(pushTimer); return pushState(); } return Promise.resolve(); }
+  function showSaveError(t){
+    var b = document.getElementById("saveErr");
+    if (!b) { b = document.createElement("div"); b.id = "saveErr"; b.setAttribute("role", "alert");
+      b.style.cssText = "position:fixed;left:16px;right:16px;bottom:16px;z-index:2000;background:#b3261e;color:#fff;padding:12px 16px;border-radius:12px;font-size:14px;box-shadow:0 4px 16px rgba(0,0,0,.3)";
+      document.body.appendChild(b); }
+    b.textContent = t;
+  }
+  function hideSaveError(){ var b = document.getElementById("saveErr"); if (b) b.remove(); }
   function applyState(d){
-    state.apiKey = d.apiKey || "";
+    state.apiKey = "";
     state.videos = Array.isArray(d.videos) ? d.videos : [];
     state.channels = Array.isArray(d.channels) ? d.channels : [];
     state.logos = d.logos && typeof d.logos === "object" ? d.logos : {};
     state.authorMap = d.authorMap && typeof d.authorMap === "object" ? d.authorMap : {};
   }
-  function loadServerState(){
-    if (!/^https?:$/.test(location.protocol)) return Promise.resolve(false);
-    var ctrl = new AbortController(), t = setTimeout(function(){ ctrl.abort(); }, 4000);
-    return fetch("/api/state", { signal:ctrl.signal, cache:"no-store" }).then(function(r){ clearTimeout(t); if (!r.ok) throw 0; return r.json(); })
-      .then(function(j){
-        serverMode = true; canEdit = !!j.canEdit;
-        var d = j.data || {};
-        var empty = !(d.videos && d.videos.length) && !(d.channels && d.channels.length);
-        if (empty && canEdit && (state.videos.length || state.channels.length)) pushState(); // first run: move this browser's list to the computer
-        else applyState(d);
-        return true;
-      }).catch(function(){ clearTimeout(t); return false; });
-  }
   var lastSig = "";
   function refreshFromServer(){
-    if (!serverMode || canEdit) return;
-    fetch("/api/state", { cache:"no-store" }).then(function(r){ return r.json(); }).then(function(j){
+    if (!serverMode || !me || !me.app) return;
+    srv("/api/state").then(function(j){
       var sig = JSON.stringify(j.data || {});
       if (sig === lastSig) return; lastSig = sig;
       var hadFocus = document.activeElement && document.activeElement !== document.body;
       if (hadFocus) rememberFocus();
       applyState(j.data || {}); rerender();
       if (hadFocus) autoFocus();
-    }).catch(function(){});
+    }).catch(function(e){ if (e.status === 401) location.replace(location.pathname); });
   }
 
   var $ = function(id){ return document.getElementById(id); };
@@ -410,7 +544,7 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
     if ((m = s.match(/youtube\.com\/c\/([^\/?#\s]+)/i))) return { q:decodeURIComponent(m[1]) };
     return null;
   }
-  function hasKey(){ return !!state.apiKey; }
+  function hasKey(){ return false; }   // the YouTube Data API is not used
   function chanById(id){ return state.channels.find(function(c){ return c.id === id; }); }
   function ages(v){ if (v.fromChannel) { var c = chanById(v.fromChannel); if (c) return c; } return v; }
   function ageText(v){
@@ -863,8 +997,11 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
     var list = state.videos.filter(function(v){ return matchesAge(v, ageFilter) && matchesQuery(v); });
     list.forEach(function(v){ grid.appendChild(card(v)); });
     if (!state.videos.length && !chans.length && !pls.length) {
-      empty.innerHTML = "<h2>No videos yet</h2><p>Add YouTube videos, channels or playlists in Settings and they will show up here.</p><button class='btn' id='emptyAdd'>Open settings</button>";
-      empty.classList.remove("hidden"); $("emptyAdd").onclick = function(){ go("settings"); };
+      if (gearAllowed()) {
+        empty.innerHTML = "<h2>No videos yet</h2><p>Add YouTube videos, channels or playlists in Settings and they will show up here.</p><button class='btn' id='emptyAdd'>Open settings</button>";
+        $("emptyAdd").onclick = openSettings;
+      } else empty.innerHTML = "<h2>No videos yet</h2><p>Ask the admin to add videos for you.</p>";
+      empty.classList.remove("hidden");
     } else if (!list.length && state.videos.length && !chans.length && !pls.length) {
       empty.innerHTML = "<h2>No videos found</h2><p>Change the age filter or your search.</p>";
       empty.classList.remove("hidden");
@@ -889,7 +1026,7 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
     var list = c.items.filter(matchesQuery);
     $("chMeta").textContent = (isPl(ch) ? "Playlist" + (ch.owner ? " by " + ch.owner : "") + " · " : "") + fa(c.items.length) + " videos · " + ageText({ min:ch.min, max:ch.max });
     if (isPl(ch)) {
-      if (!ch.thumb && c.items[0] && canEdit) { ch.thumb = "https://i.ytimg.com/vi/" + c.items[0].id + "/hqdefault.jpg"; persist(); }
+      if (!ch.thumb && c.items[0] && canSave()) { ch.thumb = "https://i.ytimg.com/vi/" + c.items[0].id + "/hqdefault.jpg"; persist(); }
       var av = $("chAvatar"); av.innerHTML = ""; av.appendChild(plThumbEl(ch, c.done ? c.items.length : null, "plhead"));
     }
     var grid = $("chGrid"), fi = Array.prototype.indexOf.call(grid.children, document.activeElement);
@@ -1121,7 +1258,7 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
     return { min:mn, max:mx };
   }
   function msgTo(id){ return function(t, err){ var m = $(id); m.textContent = t; m.className = "msg" + (err ? " err" : ""); }; }
-  var fMsg = msgTo("fMsg"), hMsg = msgTo("hMsg"), kMsg = msgTo("kMsg"), pMsg = msgTo("pMsg");
+  var fMsg = msgTo("fMsg"), hMsg = msgTo("hMsg"), pMsg = msgTo("pMsg");
 
   function row(avatarNode, title, sub, onEdit, onDelete){
     var r = el("div", "item");
@@ -1133,8 +1270,10 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
     return r;
   }
   function renderSettings(){
-    $("kKey").value = state.apiKey;
-    $("hHelp").textContent = hasKey() ? "Any channel link works (e.g. youtube.com/@name)." : "Any channel link works (e.g. youtube.com/@name). Without an API key, the latest ~200 videos of the channel are shown.";
+    $("hHelp").textContent = "Any channel link works (e.g. youtube.com/@name).";
+    $("setTabs").classList.toggle("hidden", !isAdmin());
+    $("actingBar").classList.toggle("hidden", !targetUser);
+    $("actingName").textContent = targetName;
     $("hNameWrap").classList.toggle("hidden", hasKey() || !!editingCh);
     var chOnly = state.channels.filter(function(c){ return !isPl(c); }), plOnly = state.channels.filter(isPl);
     $("pNameWrap").classList.toggle("hidden", !!editingPl);
@@ -1160,20 +1299,6 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
         function(){ if (confirm("Delete this video?")) { state.videos = state.videos.filter(function(x){ return x.key !== v.key; }); persist(); renderSettings(); fMsg("Video deleted."); } }));
     });
   }
-
-  /* API key */
-  $("kSave").onclick = function(){
-    var k = $("kKey").value.trim(), old = state.apiKey;
-    if (!k) { state.apiKey = ""; persist(); renderSettings(); $("apiBox").open = true; kMsg("Key removed."); return; }
-    kMsg("Checking the key…");
-    state.apiKey = k;
-    api("videos", { part:"id", id:"jNQXAC9IVRw" }).then(function(){
-      persist(); renderSettings(); $("apiBox").open = true;
-      kMsg("The key is valid and has been saved.");
-      state.videos.forEach(function(v){ v.m2 = 0; });
-      backfill().then(renderSettings);
-    }).catch(function(e){ state.apiKey = old; kMsg(errText(e) + " The key was not saved.", true); });
-  };
 
   /* Video form */
   function startEdit(v){
@@ -1388,35 +1513,329 @@ button.avatar:hover{box-shadow:0 0 0 2px var(--accent)}
     try { h = decodeURIComponent(h); } catch(e){}
     if (h.indexOf("watch/") === 0) { view = "watch"; arg = h.slice(6); }
     else if (h.indexOf("channel/") === 0) { view = "channel"; arg = h.slice(8); }
-    else if (h === "settings" && canEdit) view = "settings";
+    else if (h === "settings" && gearAllowed()) {
+      if (canEditNow()) view = "settings";
+      else { history.replaceState(null, "", location.pathname + location.search); openSettings(); }
+    }
     ["explore","watch","channel","settings"].forEach(function(s){ $(s).classList.toggle("hidden", s !== view); });
     document.documentElement.classList.toggle("watching", view === "watch");
     if (view !== "watch") { $("stage").classList.remove("idle"); clearTimeout(idleT); }
     if (view !== "watch") { current = null; destroyPlayer(); $("stage").classList.remove("fakefs"); document.body.classList.remove("nofscroll"); }
     routeView = view; routeArg = arg;
     if (view === "explore") renderExplore();
-    else if (view === "settings") renderSettings();
+    else if (view === "settings") { renderSettings(); showTab(setTab); $("lockBtn").classList.toggle("hidden", !serverMode); }
     else if (view === "channel") { renderChannel(arg); window.scrollTo(0, 0); }
     else renderWatch(arg);
+    if (view !== "settings" && targetUser) actAs(null);
     autoFocus();
   }
   window.addEventListener("hashchange", route);
   $("home").onclick = function(){ go("explore"); };
-  $("gear").onclick = function(){ go("settings"); };
+  /* ---------- Sign-in, unlock, users ---------- */
+  var pwMode = "unlock", pwBusy = false, setTab = "videos", users = [], editingUser = null;
+
+  function openSettings(){
+    if (!serverMode) { go("settings"); return; }
+    srv("/api/me").then(function(m){
+      me = m;
+      if (!me.loggedIn) { location.replace(location.pathname); return; }
+      if (me.unlocked && !me.mustChange) go("settings");
+      else openPw(me.unlocked ? "change" : "unlock");
+    }).catch(function(e){ showSaveError(e.message); });
+  }
+  $("gear").onclick = openSettings;
+  $("lockBtn").onclick = function(){
+    flushPush().then(function(){ return srv("/api/lock", {}); }).then(function(m){ me = m; go("explore"); })
+      .catch(function(){ go("explore"); });
+  };
+
+  function openPw(mode){
+    pwMode = mode;
+    var admin = isAdmin();
+    $("pwMsg").textContent = ""; $("pwInput").value = ""; $("pwInput2").value = "";
+    $("pwInput2").classList.toggle("hidden", mode !== "change");
+    $("pwOk").classList.remove("hidden");
+    if (mode === "change") {
+      $("pwTitle").textContent = "Choose your admin password";
+      $("pwText").textContent = "From now on you'll use this password instead of ADMIN_PASSWORD. At least 8 characters.";
+      $("pwInput").placeholder = "New password"; $("pwInput").setAttribute("inputmode", "text"); $("pwInput").removeAttribute("maxlength");
+      $("pwInput").autocomplete = "new-password"; $("pwOk").textContent = "Save password";
+    } else if (!admin && me && me.user && !me.user.hasSecret) {
+      $("pwTitle").textContent = "No PIN yet";
+      $("pwText").textContent = "Ask the admin to set a PIN for you. Without it you can watch, but not add videos.";
+      $("pwInput").classList.add("hidden"); $("pwOk").classList.add("hidden");
+    } else {
+      $("pwTitle").textContent = admin ? "Admin password" : "Enter your PIN";
+      $("pwText").textContent = admin ? "Enter your admin password to open Settings." : "Enter your 4-digit PIN to add, edit or delete videos.";
+      $("pwInput").placeholder = admin ? "Password" : "PIN";
+      if (admin) { $("pwInput").setAttribute("inputmode", "text"); $("pwInput").removeAttribute("maxlength"); }
+      else { $("pwInput").setAttribute("inputmode", "numeric"); $("pwInput").setAttribute("maxlength", "4"); }
+      $("pwInput").autocomplete = "current-password"; $("pwOk").textContent = "Unlock";
+    }
+    if (!(mode === "unlock" && !admin && me && me.user && !me.user.hasSecret)) $("pwInput").classList.remove("hidden");
+    $("pwBack").classList.remove("hidden");
+    setTimeout(function(){ ($("pwInput").classList.contains("hidden") ? $("pwCancel") : $("pwInput")).focus(); }, 30);
+  }
+  function closePw(){ $("pwBack").classList.add("hidden"); }
+  $("pwCancel").onclick = closePw;
+  $("pwBack").addEventListener("keydown", function(e){ if (e.key === "Escape") closePw(); });
+  $("pwForm").onsubmit = function(e){
+    e.preventDefault();
+    if (pwBusy) return;
+    var v = $("pwInput").value, call;
+    if (pwMode === "change") {
+      if (v.length < 8) { $("pwMsg").textContent = "Use at least 8 characters."; return; }
+      if (v !== $("pwInput2").value) { $("pwMsg").textContent = "The two passwords are different."; return; }
+      call = srv("/api/password", { newPassword:v });
+    } else {
+      if (!v) { $("pwMsg").textContent = isAdmin() ? "Enter your password." : "Enter your PIN."; return; }
+      call = srv("/api/unlock", { secret:v });
+    }
+    pwBusy = true; $("pwOk").disabled = true; $("pwMsg").textContent = "";
+    call.then(function(m){
+      me = m; hideSaveError();
+      if (me.mustChange) { openPw("change"); return; }
+      closePw(); go("settings"); backfill();
+    }).catch(function(err){ $("pwMsg").textContent = err.message; $("pwInput").select(); })
+      .then(function(){ pwBusy = false; $("pwOk").disabled = false; });
+  };
+
+  /* Sign in / first-time setup */
+  function showLogin(){
+    document.documentElement.classList.add("signedout");
+    $("login").classList.remove("hidden");
+    ["loginForm", "setupForm", "setupWait", "srvDown"].forEach(function(id){ $(id).classList.add("hidden"); });
+    var show = !me ? "srvDown" : (me.needSetup ? (me.app ? "setupWait" : "setupForm") : "loginForm");
+    $(show).classList.remove("hidden");
+    if (show === "setupForm" && !me.setupEnabled) $("suMsg").textContent = "Set ADMIN_PASSWORD in the server's .env file and restart it first.";
+    setTimeout(function(){
+      var f = { loginForm:"loginPhone", setupForm:"suPass", setupWait:"setupRetry", srvDown:"srvRetry" }[show];
+      $(f).focus();
+    }, 50);
+  }
+  function restart(){ location.replace(location.pathname); }
+  $("setupRetry").onclick = restart;
+  $("srvRetry").onclick = restart;
+  $("loginForm").onsubmit = function(e){
+    e.preventDefault();
+    var p = $("loginPhone").value.trim();
+    if (!p) { $("loginMsg").textContent = "Enter your mobile number."; return; }
+    $("loginBtn").disabled = true; $("loginMsg").textContent = "";
+    srv("/api/login", { phone:p }).then(restart).catch(function(err){
+      $("loginMsg").textContent = err.message; $("loginBtn").disabled = false; $("loginPhone").select();
+    });
+  };
+  $("setupForm").onsubmit = function(e){
+    e.preventDefault();
+    var body = { password:$("suPass").value, name:$("suName").value.trim(), phone:$("suPhone").value.trim() };
+    if (!body.password || !body.name || !body.phone) { $("suMsg").textContent = "Fill in all three fields."; return; }
+    $("suBtn").disabled = true; $("suMsg").textContent = "";
+    srv("/api/setup", body).then(restart)
+      .catch(function(err){ $("suMsg").textContent = err.message; $("suBtn").disabled = false; });
+  };
+
+  /* User menu */
+  function renderUserMenu(){
+    var u = me && me.user;
+    $("userWrap").classList.toggle("hidden", !u);
+    if (!u) return;
+    var av = $("userAv"); av.textContent = (u.name || "?").trim().charAt(0).toUpperCase(); av.style.background = colorFor("u" + u.id);
+    $("userName").textContent = u.name;
+    $("userBtn").title = u.name + " (sign out)";
+    $("umName").textContent = u.name;
+    $("umSub").textContent = (u.role === "admin" ? "Admin" : "User") + " · " + u.phone;
+    $("apkLink").classList.toggle("hidden", !me.apk || !!me.app);
+  }
+  function toggleUserMenu(open){
+    var m = $("userMenu"), want = open == null ? m.classList.contains("hidden") : open;
+    m.classList.toggle("hidden", !want);
+    $("userBtn").setAttribute("aria-expanded", String(want));
+    if (want) setTimeout(function(){ $("signOut").focus(); }, 30);
+  }
+  $("userBtn").onclick = function(e){ e.stopPropagation(); toggleUserMenu(); };
+  document.addEventListener("click", function(e){ if (!$("userWrap").contains(e.target)) toggleUserMenu(false); });
+  $("userMenu").addEventListener("keydown", function(e){ if (e.key === "Escape") { toggleUserMenu(false); $("userBtn").focus(); } });
+  $("signOut").onclick = function(){
+    flushPush().then(function(){ return srv("/api/logout", {}); }).catch(function(){}).then(restart);
+  };
+
+  /* Settings tabs */
+  function showTab(t){
+    if (t === "users" && !isAdmin()) t = "videos";
+    setTab = t;
+    $("tabVideos").classList.toggle("hidden", t !== "videos");
+    $("tabUsers").classList.toggle("hidden", t !== "users");
+    $("tabBtnVideos").setAttribute("aria-selected", String(t === "videos"));
+    $("tabBtnUsers").setAttribute("aria-selected", String(t === "users"));
+    $("tabBtnVideos").textContent = targetUser ? "Videos of " + targetName : "My videos";
+    if (t === "users") loadUsers();
+  }
+  $("tabBtnVideos").onclick = function(){ showTab("videos"); };
+  $("tabBtnUsers").onclick = function(){ showTab("users"); };
+
+  /* Admin: work on another user's lists */
+  function actAs(id, name){
+    flushPush().then(function(){
+      targetUser = id || null; targetName = id ? name : "";
+      return srv(stateUrl());
+    }).then(function(j){
+      applyState(j.data || {}); chCacheReset();
+      if (routeView === "settings") { renderSettings(); showTab("videos"); window.scrollTo(0, 0); }
+      else rerender();
+      if (targetUser) backfill();
+    }).catch(function(e){ showSaveError(e.message); });
+  }
+  function chCacheReset(){ for (var k in chCache) delete chCache[k]; }
+  $("actingBack").onclick = function(){ actAs(null); };
+
+  var uMsg = msgTo("uMsg"), importMsg = msgTo("importMsg"), myPwMsg = msgTo("myPwMsg");
+  function loadUsers(){
+    srv("/api/admin/users").then(function(j){ users = j.users || []; renderUsers(j.import); })
+      .catch(function(e){ uMsg(e.message, true); if (e.status === 401) { me.unlocked = false; go("explore"); } });
+  }
+  function plural(n, one, many){ return n + " " + (n === 1 ? one : (many || one + "s")); }
+  function renderUsers(imp){
+    $("uListHead").textContent = "Users (" + users.length + ")";
+    var box = $("uItems"); box.innerHTML = "";
+    users.forEach(function(u){
+      var r = el("div", "item");
+      var av = el("span", "avatar", (u.name || "?").charAt(0).toUpperCase()); av.style.background = colorFor("u" + u.id);
+      av.style.width = av.style.height = "44px"; av.style.flex = "none";
+      r.appendChild(av);
+      var t = el("div", "t");
+      var b = el("b", null, u.name);
+      b.appendChild(el("span", "badge2" + (u.role === "admin" ? " admin" : ""), u.role === "admin" ? "Admin" : "User"));
+      if (!u.active) b.appendChild(el("span", "badge2 off", "Inactive"));
+      if (u.locked) b.appendChild(el("span", "badge2 off", "Locked"));
+      if (u.role === "user" && !u.hasSecret) b.appendChild(el("span", "badge2 off", "Watch only"));
+      t.appendChild(b);
+      t.appendChild(el("small", null, u.phone + " · " + plural(u.videos, "video") + ", " + plural(u.channels, "channel/playlist", "channels/playlists")));
+      r.appendChild(t);
+      var vb = el("button", "btn ghost", "Videos"); vb.type = "button"; vb.onclick = function(){ if (u.id === me.user.id) actAs(null); else actAs(u.id, u.name); };
+      var ed = el("button", "btn ghost", "Edit"); ed.type = "button"; ed.onclick = function(){ startEditUser(u); };
+      r.appendChild(vb); r.appendChild(ed);
+      if (u.id !== me.user.id) {
+        var del = el("button", "btn danger", "Delete"); del.type = "button";
+        del.onclick = function(){
+          if (!confirm("Delete " + u.name + " and all their videos?")) return;
+          srv("/api/admin/users/" + u.id + "/delete", {}).then(function(){ uMsg(u.name + " deleted."); if (targetUser === u.id) actAs(null); loadUsers(); })
+            .catch(function(e){ uMsg(e.message, true); });
+        };
+        r.appendChild(del);
+      }
+      box.appendChild(r);
+    });
+    var ib = $("importBox");
+    ib.classList.toggle("hidden", !imp);
+    if (imp) {
+      $("importInfo").textContent = "An old data.json was found on the server with " + imp.videos + " videos and " + imp.channels + " channels/playlists. Choose whose list they go to.";
+      var sel = $("importUser"), keep = sel.value; sel.innerHTML = "";
+      users.forEach(function(u){ var o = el("option", null, u.name + " (" + u.phone + ")"); o.value = u.id; sel.appendChild(o); });
+      if (keep) sel.value = keep;
+    }
+  }
+  function syncSecretField(){
+    var role = $("uRole").value, self = editingUser && editingUser.id === me.user.id;
+    var inp = $("uSecret");
+    if (role === "admin") {
+      $("uSecretText").textContent = editingUser ? "New temporary password" : "Temporary password";
+      inp.setAttribute("inputmode", "text"); inp.removeAttribute("maxlength");
+      $("uHelp").textContent = "At least 8 characters. They choose their own password the first time they open Settings." + (editingUser ? " Leave empty to keep the current password." : "");
+    } else {
+      $("uSecretText").textContent = editingUser ? "New PIN (4 digits)" : "PIN (4 digits)";
+      inp.setAttribute("inputmode", "numeric"); inp.setAttribute("maxlength", "4");
+      $("uHelp").textContent = editingUser ? "Leave empty to keep the current PIN." : "Needed to add videos. Leave empty for a watch-only user.";
+    }
+    $("uSecretWrap").classList.toggle("hidden", !!self);
+    $("uNoPinWrap").classList.toggle("hidden", !(editingUser && role === "user" && editingUser.role === "user" && editingUser.hasSecret));
+    $("uRole").disabled = !!self; $("uActive").disabled = !!self;
+    if (self) $("uHelp").textContent = "Change your own password below.";
+  }
+  $("uRole").onchange = syncSecretField;
+  function startEditUser(u){
+    editingUser = u;
+    $("uName").value = u.name; $("uPhone").value = u.phone; $("uRole").value = u.role; $("uActive").checked = u.active;
+    $("uSecret").value = ""; $("uNoPin").checked = false;
+    $("uHead").textContent = "Edit " + u.name; $("uSave").textContent = "Save changes"; $("uCancel").classList.remove("hidden");
+    syncSecretField(); uMsg(""); $("uHead").scrollIntoView({ block:"start" }); $("uName").focus();
+  }
+  function resetUserForm(){
+    editingUser = null;
+    ["uName", "uPhone", "uSecret"].forEach(function(id){ $(id).value = ""; });
+    $("uRole").value = "user"; $("uActive").checked = true; $("uNoPin").checked = false;
+    $("uHead").textContent = "Add a user"; $("uSave").textContent = "Add user"; $("uCancel").classList.add("hidden");
+    syncSecretField();
+  }
+  $("uCancel").onclick = function(){ resetUserForm(); uMsg(""); };
+  $("uSave").onclick = function(){
+    var body = { name:$("uName").value.trim(), phone:$("uPhone").value.trim(), role:$("uRole").value, active:$("uActive").checked };
+    var sec = $("uSecret").value;
+    if (!body.name) { uMsg("Enter a name.", true); return; }
+    if (!body.phone) { uMsg("Enter a mobile number.", true); return; }
+    if (sec) body.secret = sec;
+    if (editingUser && $("uNoPin").checked) body.clearSecret = true;
+    var url = editingUser ? "/api/admin/users/" + editingUser.id : "/api/admin/users";
+    var wasEdit = !!editingUser, name = body.name;
+    $("uSave").disabled = true;
+    srv(url, body).then(function(){ resetUserForm(); uMsg(wasEdit ? "Saved." : name + " added. They can sign in with " + body.phone + "."); loadUsers(); })
+      .catch(function(e){ uMsg(e.message, true); })
+      .then(function(){ $("uSave").disabled = false; });
+  };
+  $("importBtn").onclick = function(){
+    var uid = Number($("importUser").value);
+    if (!uid) return;
+    $("importBtn").disabled = true;
+    srv("/api/admin/import", { userId:uid }).then(function(j){
+      importMsg("Imported " + j.videos + " videos and " + j.channels + " channels/playlists.");
+      if ((targetUser || me.user.id) === uid) srv(stateUrl()).then(function(st){ applyState(st.data || {}); });
+      loadUsers();
+    }).catch(function(e){ importMsg(e.message, true); }).then(function(){ $("importBtn").disabled = false; });
+  };
+  $("myPwSave").onclick = function(){
+    var a = $("myPw1").value, b = $("myPw2").value;
+    if (a.length < 8) { myPwMsg("Use at least 8 characters.", true); return; }
+    if (a !== b) { myPwMsg("The two passwords are different.", true); return; }
+    srv("/api/password", { newPassword:a }).then(function(m){ me = m; $("myPw1").value = $("myPw2").value = ""; myPwMsg("Password changed."); })
+      .catch(function(e){ myPwMsg(e.message, true); });
+  };
+
   $("q").addEventListener("input", function(e){
     query = e.target.value.trim().toLowerCase();
     if (routeView === "explore" || routeView === "channel") rerender(); else go("explore");
   });
-  loadServerState().then(function(){
-    if (!canEdit) {
-      $("gear").classList.add("hidden");
+
+  /* Start */
+  function startApp(){
+    document.documentElement.classList.remove("signedout");
+    $("login").classList.add("hidden");
+    renderUserMenu();
+    $("gear").classList.toggle("hidden", !gearAllowed());
+    if (me && me.app) {
       lastSig = JSON.stringify(state);
       document.addEventListener("visibilitychange", function(){ if (!document.hidden) refreshFromServer(); });
       setInterval(refreshFromServer, 20000);
     }
+    resetUserForm();
     route();
-    if (canEdit) backfill();
-  });
+    backfill();
+    if (me && me.unlocked && me.mustChange) openPw("change");
+  }
+  if (!/^https?:$/.test(location.protocol)) {
+    // Opened as a plain file: no server, no accounts; the list lives in this browser only.
+    try {
+      var saved = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+      if (saved) applyState(saved);
+    } catch(e){}
+    $("userWrap").classList.add("hidden");
+    route();
+  } else {
+    srv("/api/me").then(function(m){
+      serverMode = true; me = m;
+      try { localStorage.removeItem(LS_KEY); } catch(e){}   // lists are never kept in the browser
+      if (!me.loggedIn) { showLogin(); return; }
+      return srv("/api/state").then(function(j){ applyState(j.data || {}); startApp(); });
+    }).catch(function(){ me = null; serverMode = true; showLogin(); });
+  }
 })();
 </script>
 <script>
